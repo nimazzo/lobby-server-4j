@@ -1,9 +1,21 @@
 services:
   postgres:
     image: 'postgres:latest'
+    container_name: postgres
     environment:
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5432'
+      - '5432:5432'
+
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    container_name: pgadmin
+    environment:
+      - 'PGADMIN_DEFAULT_EMAIL=admin@admin.com'
+      - 'PGADMIN_DEFAULT_PASSWORD=admin'
+    ports:
+      - '8081:80'
+    depends_on:
+      - postgres
