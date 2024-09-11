@@ -84,6 +84,9 @@ class UserRepositoryTest {
 
         var invalidUser = userRepository.findByUsername("admin2");
         assertThat(invalidUser).isNull();
+
+        // cleanup
+        userRepository.deleteAll();
     }
 
     @TestConfiguration
