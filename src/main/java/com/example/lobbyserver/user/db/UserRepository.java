@@ -1,4 +1,4 @@
-package com.example.lobbyserver.user;
+package com.example.lobbyserver.user.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,4 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateEmailByUsername(@NonNull String email, String username);
 
     User findByUsername(String username);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }

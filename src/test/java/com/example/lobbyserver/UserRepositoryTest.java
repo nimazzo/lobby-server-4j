@@ -1,9 +1,9 @@
 package com.example.lobbyserver;
 
-import com.example.lobbyserver.user.Authority;
-import com.example.lobbyserver.user.UserConfiguration;
-import com.example.lobbyserver.user.UserRepository;
 import com.example.lobbyserver.user.UserService;
+import com.example.lobbyserver.user.db.Authority;
+import com.example.lobbyserver.user.db.UserConfiguration;
+import com.example.lobbyserver.user.db.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

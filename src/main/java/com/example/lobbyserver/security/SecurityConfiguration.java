@@ -3,6 +3,7 @@ package com.example.lobbyserver.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -21,9 +22,14 @@ public class SecurityConfiguration {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").authenticated()
+                        // permitted for all
+                        .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
                         .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        // require authentication
+                        .requestMatchers("/").authenticated()
+                        .requestMatchers("/user/**").authenticated()
+                        // denied for all
                         .anyRequest().denyAll()
                 )
                 .httpBasic(Customizer.withDefaults())

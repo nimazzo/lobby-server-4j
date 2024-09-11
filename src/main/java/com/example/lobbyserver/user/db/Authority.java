@@ -1,4 +1,4 @@
-package com.example.lobbyserver.user;
+package com.example.lobbyserver.user.db;
 
 import jakarta.persistence.*;
 import lombok.Getter;

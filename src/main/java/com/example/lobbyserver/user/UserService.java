@@ -1,5 +1,6 @@
 package com.example.lobbyserver.user;
 
+import com.example.lobbyserver.user.db.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -30,4 +31,19 @@ public class UserService {
         userRepository.updateEmailByUsername(email, username);
     }
 
+    public UserDao getUser(String username) {
+        var user = userRepository.findByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        return new UserDao(user.getUsername(), user.getPassword(), user.getEmail());
+    }
+
+    public boolean usernameExists(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
