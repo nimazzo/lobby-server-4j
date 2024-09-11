@@ -22,6 +22,7 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").authenticated()
+                        .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/error/**").permitAll()
                         .anyRequest().denyAll()
                 )
