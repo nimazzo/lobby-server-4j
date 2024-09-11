@@ -2,6 +2,7 @@ package com.example.lobbyserver;
 
 import com.example.lobbyserver.user.UserService;
 import com.example.lobbyserver.user.db.Authority;
+import com.example.lobbyserver.user.db.AuthorityRepository;
 import com.example.lobbyserver.user.db.UserConfiguration;
 import com.example.lobbyserver.user.db.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,8 @@ class UserRepositoryTest {
     UserService userService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    AuthorityRepository authorityRepository;
     @Autowired
     PasswordEncoder encoder;
 
@@ -87,6 +90,18 @@ class UserRepositoryTest {
 
         // cleanup
         userRepository.deleteAll();
+    }
+
+    @Test
+    void testThatDeletingUsersCascadesToAuthorities() {
+        var userCount = userRepository.count();
+        assertThat(userCount).isEqualTo(2);
+        var authorityCount = authorityRepository.count();
+        assertThat(authorityCount).isEqualTo(3);
+
+        userRepository.deleteAll();
+        var newAuthorityCount = authorityRepository.count();
+        assertThat(newAuthorityCount).isEqualTo(0);
     }
 
     @TestConfiguration
