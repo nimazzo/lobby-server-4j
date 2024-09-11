@@ -1,5 +1,6 @@
 package com.example.lobbyserver;
 
+import com.example.lobbyserver.user.Authority;
 import com.example.lobbyserver.user.UserConfiguration;
 import com.example.lobbyserver.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @ActiveProfiles("test")
 class UserRepositoryTest {
-
     @Autowired
     UserDetailsManager userDetailsManager;
     @Autowired
@@ -41,12 +41,14 @@ class UserRepositoryTest {
                         .password(encoder.encode("admin"))
                         .roles("USER", "ADMIN")
                         .build());
+        userRepository.updateEmailByUsername("admin@admin.com", "admin");
         userDetailsManager.createUser(
                 User.builder()
                         .username("user")
                         .password(encoder.encode("user"))
                         .roles("USER")
                         .build());
+        userRepository.updateEmailByUsername("user@user.com", "user");
     }
 
     @Test
@@ -55,14 +57,20 @@ class UserRepositoryTest {
 
     @Test
     void testThatDatabaseWorks() {
-        var admin = userDetailsManager.loadUserByUsername("admin");
+        var admin = userRepository.findByUsername("admin");
         assertThat(admin).isNotNull();
         assertThat(admin.getUsername()).isEqualTo("admin");
+        assertThat(admin.getEmail()).isEqualTo("admin@admin.com");
+        assertThat(admin.getAuthorities()).hasSize(2);
+        assertThat(admin.getAuthorities().stream().map(Authority::getAuthority)).containsExactlyInAnyOrder("ROLE_ADMIN", "ROLE_USER");
         assertThat(encoder.matches("admin", admin.getPassword())).isTrue();
 
-        var user = userDetailsManager.loadUserByUsername("user");
+        var user = userRepository.findByUsername("user");
         assertThat(user).isNotNull();
         assertThat(user.getUsername()).isEqualTo("user");
+        assertThat(user.getEmail()).isEqualTo("user@user.com");
+        assertThat(user.getAuthorities()).hasSize(1);
+        assertThat(user.getAuthorities().stream().map(Authority::getAuthority)).containsExactly("ROLE_USER");
         assertThat(encoder.matches("user", user.getPassword())).isTrue();
 
         var numberOfRows = userRepository.count();

@@ -25,15 +25,15 @@ public class Authority {
 
     public Authority(Long id, User user, String authority) {
         this.id = id;
-        this.user = new User(user.getUsername(), user.getPassword(), user.isEnabled());
+        this.user = new User(user.getUsername(), user.getPassword(), user.getEmail(), user.isEnabled(), user.getAuthorities());
         this.authority = authority;
     }
 
     public User getUser() {
-        return new User(user.getUsername(), user.getPassword(), user.isEnabled());
+        return new User(user.getUsername(), user.getPassword(), user.getEmail(), user.isEnabled(), user.getAuthorities());
     }
 
     public void setUser(User user) {
-        this.user = new User(user.getUsername(), user.getPassword(), user.isEnabled());
+        this.user = new User(user.getUsername(), user.getPassword(), user.getEmail(), user.isEnabled(), user.getAuthorities());
     }
 }
