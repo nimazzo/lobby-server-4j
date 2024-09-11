@@ -126,6 +126,7 @@
                 <version>4.8.6.0</version>
                 <configuration>
                     <includeTests>true</includeTests>
+                    <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
                 <executions>
                     <execution>

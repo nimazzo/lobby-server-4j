@@ -1,0 +1,5 @@
+<FindBugsFilter>
+    <Class name="com.example.lobbyserver.user.UserService">
+        <BugPattern pattern="EI_EXPOSE_REP2"/>
+    </Class>
+</FindBugsFilter>
