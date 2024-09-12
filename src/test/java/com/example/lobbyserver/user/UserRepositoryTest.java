@@ -1,6 +1,6 @@
-package com.example.lobbyserver;
+package com.example.lobbyserver.user;
 
-import com.example.lobbyserver.user.UserService;
+import com.example.lobbyserver.TestcontainersConfiguration;
 import com.example.lobbyserver.user.db.Authority;
 import com.example.lobbyserver.user.db.AuthorityRepository;
 import com.example.lobbyserver.user.db.UserConfiguration;
