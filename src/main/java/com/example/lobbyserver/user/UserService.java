@@ -22,9 +22,19 @@ public class UserService {
 
     @Transactional
     public void createUser(String username, String password, String email, String... roles) {
+        createUser(username, password, email, false, roles);
+    }
+
+    @Transactional
+    public void createActivatedUser(String username, String password, String email, String... roles) {
+        createUser(username, password, email, true, roles);
+    }
+
+    private void createUser(String username, String password, String email, boolean activated, String... roles) {
         var user = User.builder()
                 .username(username)
                 .password(encoder.encode(password))
+                .disabled(!activated)
                 .roles(roles)
                 .build();
         userDetailsManager.createUser(user);
@@ -45,5 +55,9 @@ public class UserService {
 
     public boolean emailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public void activateUser(String email) {
+        userRepository.updateEnabledByEmail(true, email);
     }
 }

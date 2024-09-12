@@ -27,6 +27,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         // permitted for all
                         .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
+                        .requestMatchers("/verify").permitAll()
                         .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/error/**").permitAll()
                         // require authentication

@@ -1,5 +1,6 @@
 package com.example.lobbyserver.user;
 
+import com.example.lobbyserver.mail.MailVerificationService;
 import com.example.lobbyserver.security.SecurityConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,6 +32,9 @@ class UserControllerTest {
 
     @MockBean
     UserService userService;
+
+    @MockBean
+    MailVerificationService mailVerificationService;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -75,6 +80,8 @@ class UserControllerTest {
                 .andExpect(header().string("Location", "http://localhost/user/user"))
                 .andReturn();
 
+        verify(mailVerificationService, times(1)).sendVerificationMail(user.email());
+
         // check that created user exists at location
         var location = result.getResponse().getHeader("Location");
         assertThat(location).isNotNull();
@@ -108,6 +115,8 @@ class UserControllerTest {
                                 .content(toJson(emailExistsUser))
                                 .with(csrf()))
                 .andExpect(status().isConflict());
+
+        verifyNoInteractions(mailVerificationService);
     }
 
     @Test
@@ -120,6 +129,8 @@ class UserControllerTest {
                         .content(toJson(invalidUser)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(mailVerificationService);
     }
 
     private String toJson(UserDao user) throws JsonProcessingException {

@@ -17,4 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.enabled = ?1 where u.email = ?2")
+    void updateEnabledByEmail(boolean enabled, String email);
 }

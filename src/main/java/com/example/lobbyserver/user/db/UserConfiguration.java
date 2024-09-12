@@ -26,8 +26,8 @@ public class UserConfiguration {
     ApplicationRunner initDummyUsers(UserService userService) {
         log.info("Populating 'users' database with 'user' and 'admin' users");
         return _ -> {
-            userService.createUser("user", "user", "user@user.com", "USER");
-            userService.createUser("admin", "admin", "admin@admin.com", "USER", "ADMIN");
+            userService.createActivatedUser("user", "user", "user@user.com", "USER");
+            userService.createActivatedUser("admin", "admin", "admin@admin.com", "USER", "ADMIN");
         };
     }
 }

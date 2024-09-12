@@ -1,5 +1,6 @@
 package com.example.lobbyserver.user;
 
+import com.example.lobbyserver.mail.MailVerificationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class UserController {
 
     private final UserService userService;
+    private final MailVerificationService mailVerificationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, MailVerificationService mailVerificationService) {
         this.userService = userService;
+        this.mailVerificationService = mailVerificationService;
     }
 
     @GetMapping("/{username}")
@@ -37,6 +40,8 @@ public class UserController {
         }
 
         userService.createUser(user.username(), user.password(), user.email(), "USER");
+        mailVerificationService.sendVerificationMail(user.email());
+        
         var location = ucb.path("/user/{username}").buildAndExpand(user.username()).toUri();
         return ResponseEntity.created(location).build();
     }
