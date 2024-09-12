@@ -1,0 +1,18 @@
+package com.example.lobbyserver.testing;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/testing")
+public class TestingController {
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void test() {
+    }
+
+}

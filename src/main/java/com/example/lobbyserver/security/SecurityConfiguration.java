@@ -17,7 +17,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, Environment env) throws Exception {
         boolean isDevEnvironment = env.matchesProfiles("dev");
         if (isDevEnvironment) {
-            http.authorizeHttpRequests(auth -> auth.requestMatchers("/actuator/**").authenticated());
+            http.authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/actuator/**").authenticated()
+                    .requestMatchers("/testing/**").permitAll()
+            );
         }
 
         http
