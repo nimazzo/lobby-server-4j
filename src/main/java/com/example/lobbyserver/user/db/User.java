@@ -27,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Authority> authorities;
 
     public User(String username, String password, String email, boolean enabled, Set<Authority> authorities) {

@@ -33,6 +33,8 @@ public class SecurityConfiguration {
                         // require authentication
                         .requestMatchers("/").authenticated()
                         .requestMatchers("/user/**").authenticated()
+                        .requestMatchers("/lobby/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/lobby/create").authenticated()
                         // denied for all
                         .anyRequest().denyAll()
                 )

@@ -28,6 +28,8 @@ public class UserConfiguration {
         return _ -> {
             userService.createActivatedUser("user", "user", "user@user.com", "USER");
             userService.createActivatedUser("admin", "admin", "admin@admin.com", "USER", "ADMIN");
+            userService.createActivatedUser("bob", "bob", "bob@bob.com", "USER");
+            userService.createActivatedUser("alice", "alice", "alice@alice.com", "USER");
         };
     }
 }

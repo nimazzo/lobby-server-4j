@@ -3,17 +3,18 @@ package com.example.lobbyserver.lobby.db;
 
 import com.example.lobbyserver.user.db.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "lobby")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @SuppressWarnings("unused")
 public class Lobby {
 
@@ -34,10 +35,58 @@ public class Lobby {
     @JoinColumn(name = "owner", nullable = false, referencedColumnName = "username", foreignKey = @ForeignKey(name = "fk_lobby_users"))
     private User owner;
 
-    @Column(nullable = false)
+    @OneToMany
+    @JoinTable(
+            name = "lobby_players",
+            joinColumns = @JoinColumn(name = "lobby_id"),
+            inverseJoinColumns = @JoinColumn(name = "username")
+    )
+    private Set<User> players;
+
     private String gameServerHost;
 
-    @Column(nullable = false)
     private Integer gameServerPort;
 
+    @Version
+    private Long version;
+
+    public Lobby(Long id, String name, Integer numberOfPlayers, Integer maxPlayers, User owner, Set<User> players, String gameServerHost, Integer gameServerPort, Long version) {
+        this.id = id;
+        this.name = name;
+        this.numberOfPlayers = numberOfPlayers;
+        this.maxPlayers = maxPlayers;
+        this.owner = new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+        this.players = new HashSet<>(players);
+        this.gameServerHost = gameServerHost;
+        this.gameServerPort = gameServerPort;
+        this.version = version;
+    }
+
+    public User getOwner() {
+        return new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+    }
+
+    public void setOwner(User owner) {
+        this.owner = new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+    }
+
+    public Set<User> getPlayers() {
+        return Set.copyOf(players);
+    }
+
+    public void setPlayers(Set<User> players) {
+        this.players = new HashSet<>(players);
+    }
+
+    public boolean isGameActive() {
+        return getGameServerHost() != null && getGameServerPort() != null;
+    }
+
+    public boolean isNotFull() {
+        return getNumberOfPlayers() < getMaxPlayers();
+    }
+    
+    public void addPlayer(User player) {
+        players.add(new User(player.getUsername(), player.getPassword(), player.getEmail(), player.isEnabled(), player.getAuthorities()));
+    }
 }
