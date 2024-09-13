@@ -44,7 +44,7 @@ public class LobbyService {
 
         var savedLobby = lobbyRepository.save(lobbyToCreate);
 
-        gameInstanceService.startNewGameInstance(savedLobby.getId());
+        gameInstanceService.startNewGameInstance(savedLobby.getId(), savedLobby.getMaxPlayers());
 
         return LobbyDao.fromLobby(savedLobby);
     }
