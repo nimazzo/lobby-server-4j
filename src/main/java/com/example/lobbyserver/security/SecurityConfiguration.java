@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/lobby/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/lobby/create").authenticated()
                         .requestMatchers(HttpMethod.POST, "/lobby/join/*").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/lobby/leave/*").authenticated()
                         // denied for all
                         .anyRequest().denyAll()
                 )

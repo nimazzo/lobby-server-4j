@@ -1,6 +1,7 @@
 package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
+import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class GameInstanceService implements SmartLifecycle {
@@ -29,7 +31,7 @@ public class GameInstanceService implements SmartLifecycle {
     private final Environment env;
     private final Executor taskScheduler;
 
-    private final Map<Long, ProcessHandle> gameInstances = new ConcurrentHashMap<>();
+    private final Map<Long, GameInstanceInfo> gameInstances = new ConcurrentHashMap<>();
     private volatile boolean running = false;
 
     private final Phaser stopGate = new Phaser(1);
@@ -42,6 +44,10 @@ public class GameInstanceService implements SmartLifecycle {
 
     @Async
     public void startNewGameInstance(long lobbyId, int lobbySize) {
+        if (gameInstances.putIfAbsent(lobbyId, new GameInstanceInfo(lobbySize)) != null) {
+            throw new IllegalStateException("Game instance for lobby " + lobbyId + " already exists");
+        }
+
         try (var serverSocket = new ServerSocket(0)) {
 
             var localLobbyPort = serverSocket.getLocalPort();
@@ -64,6 +70,23 @@ public class GameInstanceService implements SmartLifecycle {
         }
     }
 
+    public int playerLeftGame(Long lobbyId) {
+        var gameInstanceInfo = gameInstances.get(lobbyId);
+        if (gameInstanceInfo == null) {
+            throw new IllegalStateException("Game instance for lobby " + lobbyId + " does not exist");
+        }
+
+        var remaining = gameInstanceInfo.connectedPlayers.decrementAndGet();
+
+        if (remaining == 0) {
+            log.debug("All players left the game {}, shutting down server", lobbyId);
+            gameInstanceInfo.getProcess().destroy();
+            gameInstances.remove(lobbyId);
+        }
+
+        return remaining;
+    }
+
     private void launchGameServer(int localLobbyPort, long lobbyId) {
         stopGate.register();
         try {
@@ -74,9 +97,10 @@ public class GameInstanceService implements SmartLifecycle {
             var process = new ProcessBuilder(serverResource.getFile().getPath(), Integer.toString(localLobbyPort))
                     .start();
             log.debug("Game server for lobby {} started", lobbyId);
-            gameInstances.put(lobbyId, process.toHandle());
+            gameInstances.get(lobbyId).setProcess(process.toHandle());
 
             var exit = process.waitFor();
+            gameInstances.remove(lobbyId);
 
             log.debug("Game server for lobby {} exited with code {}", lobbyId, exit);
         } catch (IOException | InterruptedException e) {
@@ -110,6 +134,28 @@ public class GameInstanceService implements SmartLifecycle {
     }
 
     void shutdown() {
-        gameInstances.values().forEach(ProcessHandle::destroy);
+        gameInstances.values()
+                .stream()
+                .map(GameInstanceInfo::getProcess)
+                .forEach(ProcessHandle::destroy);
+    }
+
+    @SuppressWarnings({"LombokSetterMayBeUsed", "LombokGetterMayBeUsed"})
+    @EqualsAndHashCode
+    static class GameInstanceInfo {
+        private final AtomicInteger connectedPlayers;
+        private ProcessHandle process;
+
+        GameInstanceInfo(int connectedPlayers) {
+            this.connectedPlayers = new AtomicInteger(connectedPlayers);
+        }
+
+        public ProcessHandle getProcess() {
+            return process;
+        }
+
+        public void setProcess(ProcessHandle process) {
+            this.process = process;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.lobbyserver.lobby;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/lobby")
 public class LobbyController {
 
+    private static final Logger log = LoggerFactory.getLogger(LobbyController.class);
     private final LobbyService lobbyService;
 
     public LobbyController(LobbyService lobbyService) {
@@ -39,10 +42,21 @@ public class LobbyController {
     @PostMapping("/join/{lobbyId}")
     public ResponseEntity<GameConnectionDetails> joinLobby(@PathVariable Long lobbyId, Authentication auth) {
         var username = auth.getName();
+        log.debug("User {} attempted to joining lobby {}", username, lobbyId);
 
         return lobbyService.tryJoinLobby(lobbyId, username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
+    @PostMapping("/leave/{lobbyId}")
+    public ResponseEntity<Void> leaveLobby(@PathVariable Long lobbyId, @Valid @RequestBody GameResult result, Authentication auth) {
+        var username = auth.getName();
+        log.debug("User {} attempted to leave lobby {}", username, lobbyId);
+
+        lobbyService.removePlayerFromLobby(lobbyId, username);
+        lobbyService.saveGameResult(lobbyId, username, result);
+
+        return ResponseEntity.ok().build();
+    }
 }

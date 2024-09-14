@@ -48,10 +48,13 @@ public class Lobby {
 
     private Integer gameServerPort;
 
+    @Column(nullable = false)
+    private Boolean gameStarted;
+
     @Version
     private Long version;
 
-    public Lobby(Long id, String name, Integer numberOfPlayers, Integer maxPlayers, User owner, Set<User> players, String gameServerHost, Integer gameServerPort, Long version) {
+    public Lobby(Long id, String name, Integer numberOfPlayers, Integer maxPlayers, User owner, Set<User> players, String gameServerHost, Integer gameServerPort, Boolean gameStarted, Long version) {
         this.id = id;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
@@ -60,11 +63,12 @@ public class Lobby {
         this.players = new HashSet<>(players);
         this.gameServerHost = gameServerHost;
         this.gameServerPort = gameServerPort;
+        this.gameStarted = gameStarted;
         this.version = version;
     }
 
     public Lobby(String name, Integer maxPlayers, User owner) {
-        this(null, name, 0, maxPlayers, owner, Set.of(), null, null, null);
+        this(null, name, 0, maxPlayers, owner, Set.of(), null, null, false, null);
     }
 
     public User getOwner() {
@@ -88,7 +92,7 @@ public class Lobby {
     }
 
     public boolean isNotFull() {
-        return getNumberOfPlayers() < getMaxPlayers();
+        return !isFull();
     }
 
     public void addPlayer(User player) {
@@ -97,5 +101,17 @@ public class Lobby {
 
     public void removePlayer(User player) {
         players.removeIf(p -> p.getUsername().equals(player.getUsername()));
+    }
+
+    public boolean isFull() {
+        return getNumberOfPlayers() >= getMaxPlayers();
+    }
+
+    public boolean notStarted() {
+        return !getGameStarted();
+    }
+
+    public boolean containsUser(String username) {
+        return players.stream().anyMatch(user -> user.getUsername().equals(username));
     }
 }

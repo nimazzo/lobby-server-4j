@@ -17,7 +17,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.given;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
@@ -85,6 +86,7 @@ class LobbyServiceTest {
                         Set.of(),
                         hostname,
                         port,
+                        false,
                         null)
         ));
 
@@ -113,6 +115,7 @@ class LobbyServiceTest {
                         Set.of(DUMMY_USER),
                         hostname,
                         port,
+                        false,
                         null)
         ));
 
@@ -138,9 +141,10 @@ class LobbyServiceTest {
                         Set.of(DUMMY_USER),
                         hostname,
                         port,
+                        true,
                         null)
         ));
-        
+
         var result = lobbyService.tryJoinLobby(lobbyId, username);
         assertThat(result).isEmpty();
     }
