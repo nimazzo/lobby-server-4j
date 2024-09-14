@@ -122,6 +122,30 @@ class LobbyServiceTest {
     }
 
     @Test
+    void testThatTryJoinLobbyReturnsEmptyForFullLobby() {
+        var username = "user";
+        var lobbyId = 99L;
+        var hostname = "localhost";
+        var port = 9999;
+
+        given(userRepository.findByUsername(username)).willReturn(DUMMY_USER);
+        given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
+                new Lobby(lobbyId,
+                        "Lobby 1",
+                        4,
+                        4,
+                        DUMMY_USER,
+                        Set.of(DUMMY_USER),
+                        hostname,
+                        port,
+                        null)
+        ));
+        
+        var result = lobbyService.tryJoinLobby(lobbyId, username);
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void testThatTryJoinLobbyReturnsEmptyForNonExistingLobby() {
         var result = lobbyService.tryJoinLobby(99L, "user");
         assertThat(result).isEmpty();
