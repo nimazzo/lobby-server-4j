@@ -1,11 +1,13 @@
 package com.example.lobbyserver.lobby;
 
 import com.example.lobbyserver.game.GameInstanceService;
+import com.example.lobbyserver.game.db.GameResultRepository;
 import com.example.lobbyserver.lobby.db.Lobby;
 import com.example.lobbyserver.lobby.db.LobbyRepository;
 import com.example.lobbyserver.user.db.User;
 import com.example.lobbyserver.user.db.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,9 +38,12 @@ class LobbyServiceTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    GameResultRepository gameResultRepository;
+
     @BeforeEach
     void setUp() {
-        lobbyService = new LobbyService(lobbyRepository, gameInstanceService, userRepository);
+        lobbyService = new LobbyService(lobbyRepository, gameInstanceService, userRepository, gameResultRepository);
     }
 
     @Test
@@ -153,5 +158,17 @@ class LobbyServiceTest {
     void testThatTryJoinLobbyReturnsEmptyForNonExistingLobby() {
         var result = lobbyService.tryJoinLobby(99L, "user");
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    @Disabled
+    void testThatFullLobbyGetsDeletedFromDatabase() {
+        fail("not implemented");
+    }
+
+    @Test
+    @Disabled
+    void testThatCannotJoinLobbyThatHasAlreadyStarted() {
+        fail("not implemented");
     }
 }

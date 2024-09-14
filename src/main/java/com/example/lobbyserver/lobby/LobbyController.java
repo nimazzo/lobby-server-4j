@@ -50,12 +50,12 @@ public class LobbyController {
     }
 
     @PostMapping("/leave/{lobbyId}")
-    public ResponseEntity<Void> leaveLobby(@PathVariable Long lobbyId, @Valid @RequestBody GameResult result, Authentication auth) {
+    public ResponseEntity<Void> leaveLobby(@PathVariable Long lobbyId, @Valid @RequestBody GameResultRequest result, Authentication auth) {
         var username = auth.getName();
         log.debug("User {} attempted to leave lobby {}", username, lobbyId);
 
         lobbyService.removePlayerFromLobby(lobbyId, username);
-        lobbyService.saveGameResult(lobbyId, username, result);
+        lobbyService.saveGameResult(username, result);
 
         return ResponseEntity.ok().build();
     }

@@ -2,7 +2,7 @@ package com.example.lobbyserver.lobby;
 
 import jakarta.validation.constraints.NotNull;
 
-public record GameResult(
+public record GameResultRequest(
         @NotNull
         Long score,
         @NotNull

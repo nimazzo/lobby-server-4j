@@ -1,6 +1,8 @@
 package com.example.lobbyserver.lobby;
 
 import com.example.lobbyserver.game.GameInstanceService;
+import com.example.lobbyserver.game.db.GameResult;
+import com.example.lobbyserver.game.db.GameResultRepository;
 import com.example.lobbyserver.lobby.db.Lobby;
 import com.example.lobbyserver.lobby.db.LobbyRepository;
 import com.example.lobbyserver.user.db.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -23,11 +26,13 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
     private final GameInstanceService gameInstanceService;
     private final UserRepository userRepository;
+    private final GameResultRepository gameResultRepository;
 
-    public LobbyService(LobbyRepository lobbyRepository, GameInstanceService gameInstanceService, UserRepository userRepository) {
+    public LobbyService(LobbyRepository lobbyRepository, GameInstanceService gameInstanceService, UserRepository userRepository, GameResultRepository gameResultRepository) {
         this.lobbyRepository = lobbyRepository;
         this.gameInstanceService = gameInstanceService;
         this.userRepository = userRepository;
+        this.gameResultRepository = gameResultRepository;
     }
 
     public LobbyDao createNewLobby(LobbyRequest lobbyRequest, String username) {
@@ -100,7 +105,14 @@ public class LobbyService {
         }
     }
 
-    public void saveGameResult(Long lobbyId, String username, @Valid GameResult result) {
-
+    public void saveGameResult(String username, @Valid GameResultRequest result) {
+        gameResultRepository.save(new GameResult(
+                null,
+                userRepository.findByUsername(username),
+                result.score(),
+                result.level(),
+                result.time(),
+                LocalDateTime.now()
+        ));
     }
 }
