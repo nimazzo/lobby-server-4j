@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
 @Configuration
-@EnableAsync
+@EnableAsync(proxyTargetClass = true)
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 public class ApplicationConfiguration {
 }

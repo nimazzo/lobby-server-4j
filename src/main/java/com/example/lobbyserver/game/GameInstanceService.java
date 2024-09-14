@@ -1,9 +1,9 @@
 package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.scheduling.annotation.Async;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 @Service
-public class GameInstanceService {
+public class GameInstanceService implements SmartLifecycle {
 
     private static final Logger log = LoggerFactory.getLogger(GameInstanceService.class);
 
@@ -28,20 +28,12 @@ public class GameInstanceService {
     private final Executor taskScheduler;
 
     private final Map<Long, ProcessHandle> gameInstances = new ConcurrentHashMap<>();
+    private volatile boolean running = false;
 
     public GameInstanceService(LobbyRepository lobbyRepository, Environment env, Executor taskScheduler) {
         this.lobbyRepository = lobbyRepository;
         this.env = env;
         this.taskScheduler = taskScheduler;
-    }
-
-    @PostConstruct
-    void setupShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
-    }
-
-    void shutdown() {
-        gameInstances.values().forEach(ProcessHandle::destroy);
     }
 
     @Async
@@ -83,5 +75,33 @@ public class GameInstanceService {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void start() {
+        running = true;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        log.debug("SmartLifeCycle::stop() called");
+        stop();
+        callback.run();
+    }
+
+    @Override
+    public void stop() {
+        log.debug("LifeCycle::stop() called");
+        shutdown();
+        running = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    void shutdown() {
+        gameInstances.values().forEach(ProcessHandle::destroy);
     }
 }
