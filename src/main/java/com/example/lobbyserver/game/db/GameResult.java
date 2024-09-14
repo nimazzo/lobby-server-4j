@@ -2,7 +2,6 @@ package com.example.lobbyserver.game.db;
 
 import com.example.lobbyserver.user.db.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @SuppressWarnings("unused")
 public class GameResult {
 
@@ -37,4 +35,21 @@ public class GameResult {
 
     @Column(nullable = false)
     private LocalDateTime dateTime;
+
+    public GameResult(Long id, User user, Long score, Integer level, Long time, LocalDateTime dateTime) {
+        this.id = id;
+        this.user = new User(user);
+        this.score = score;
+        this.level = level;
+        this.time = time;
+        this.dateTime = dateTime;
+    }
+
+    public User getUser() {
+        return new User(user);
+    }
+
+    public void setUser(User user) {
+        this.user = new User(user);
+    }
 }

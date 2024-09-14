@@ -40,6 +40,14 @@ public class User {
         this.authorities = Set.copyOf(authorities);
     }
 
+    public User(User user) {
+        this.username = user.username;
+        this.password = user.password;
+        this.email = user.email;
+        this.enabled = user.enabled;
+        this.authorities = Set.copyOf(user.authorities);
+    }
+
     public Set<Authority> getAuthorities() {
         return Set.copyOf(authorities);
     }

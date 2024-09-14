@@ -41,6 +41,7 @@ class LobbyRepositoryTest {
         lobby.setNumberOfPlayers(0);
         lobby.setMaxPlayers(4);
         lobby.setOwner(owner);
+        lobby.setGameStarted(false);
         lobbyRepository.save(lobby);
     }
 

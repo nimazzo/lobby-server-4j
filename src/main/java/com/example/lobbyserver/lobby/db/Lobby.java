@@ -59,7 +59,7 @@ public class Lobby {
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.maxPlayers = maxPlayers;
-        this.owner = new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+        this.owner = new User(owner);
         this.players = new HashSet<>(players);
         this.gameServerHost = gameServerHost;
         this.gameServerPort = gameServerPort;
@@ -72,11 +72,11 @@ public class Lobby {
     }
 
     public User getOwner() {
-        return new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+        return new User(owner);
     }
 
     public void setOwner(User owner) {
-        this.owner = new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
+        this.owner = new User(owner);
     }
 
     public Set<User> getPlayers() {
@@ -96,7 +96,7 @@ public class Lobby {
     }
 
     public void addPlayer(User player) {
-        players.add(new User(player.getUsername(), player.getPassword(), player.getEmail(), player.isEnabled(), player.getAuthorities()));
+        players.add(new User(owner));
     }
 
     public void removePlayer(User player) {

@@ -5,4 +5,7 @@
     <Class name="com.example.lobbyserver.lobby.LobbyService">
         <BugPattern pattern="EI_EXPOSE_REP2"/>
     </Class>
+    <Class name="com.example.lobbyserver.lobby.LobbyController">
+        <BugPattern pattern="EI_EXPOSE_REP2"/>
+    </Class>
 </FindBugsFilter>
