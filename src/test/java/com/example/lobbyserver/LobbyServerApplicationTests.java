@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 class LobbyServerApplicationTests {
 
     @Test
-    void contextLoads() {
+    void testThatContextLoads() {
     }
 
 }
