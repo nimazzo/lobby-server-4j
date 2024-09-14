@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Phaser;
 
 @Service
 public class GameInstanceService implements SmartLifecycle {
@@ -29,6 +31,8 @@ public class GameInstanceService implements SmartLifecycle {
 
     private final Map<Long, ProcessHandle> gameInstances = new ConcurrentHashMap<>();
     private volatile boolean running = false;
+
+    private final Phaser stopGate = new Phaser(1);
 
     public GameInstanceService(LobbyRepository lobbyRepository, Environment env, Executor taskScheduler) {
         this.lobbyRepository = lobbyRepository;
@@ -61,6 +65,7 @@ public class GameInstanceService implements SmartLifecycle {
     }
 
     private void launchGameServer(int localLobbyPort, long lobbyId) {
+        stopGate.register();
         try {
             var serverResource = new FileSystemResource(Objects.requireNonNull(env.getProperty("game.server.executable-name")));
             if (!serverResource.exists()) {
@@ -70,10 +75,14 @@ public class GameInstanceService implements SmartLifecycle {
                     .start();
             log.debug("Game server for lobby {} started", lobbyId);
             gameInstances.put(lobbyId, process.toHandle());
+
             var exit = process.waitFor();
+
             log.debug("Game server for lobby {} exited with code {}", lobbyId, exit);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+            stopGate.arriveAndDeregister();
         }
     }
 
@@ -83,15 +92,14 @@ public class GameInstanceService implements SmartLifecycle {
     }
 
     @Override
-    public void stop(Runnable callback) {
-        log.debug("SmartLifeCycle::stop() called");
+    public void stop(@NonNull Runnable callback) {
         stop();
+        stopGate.arriveAndAwaitAdvance();
         callback.run();
     }
 
     @Override
     public void stop() {
-        log.debug("LifeCycle::stop() called");
         shutdown();
         running = false;
     }
