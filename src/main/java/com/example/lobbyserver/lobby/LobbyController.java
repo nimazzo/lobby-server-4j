@@ -36,7 +36,7 @@ public class LobbyController {
         return lobbyService.getOpenLobbies(pageable);
     }
 
-    @GetMapping("/join/{lobbyId}")
+    @PostMapping("/join/{lobbyId}")
     public ResponseEntity<GameConnectionDetails> joinLobby(@PathVariable Long lobbyId, Authentication auth) {
         var username = auth.getName();
 
