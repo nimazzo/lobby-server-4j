@@ -104,6 +104,18 @@ class UserRepositoryTest {
         assertThat(newAuthorityCount).isEqualTo(0);
     }
 
+    @Test
+    void testThatEmptyAuthoritiesWork() {
+        userService.createActivatedUser("user2", "user2", "user2@user2.com");
+
+        var userFromDb = userRepository.findByUsername("user2");
+        assertThat(userFromDb).isNotNull();
+        assertThat(userFromDb.getUsername()).isEqualTo("user2");
+        assertThat(userFromDb.getEmail()).isEqualTo("user2@user2.com");
+        assertThat(encoder.matches("user2", userFromDb.getPassword())).isTrue();
+        assertThat(userFromDb.getAuthorities()).isEmpty();
+    }
+
     @TestConfiguration
     static class UserRepositoryTestConfiguration {
         @Bean

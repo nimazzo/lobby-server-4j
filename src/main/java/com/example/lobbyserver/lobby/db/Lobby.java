@@ -41,7 +41,8 @@ public class Lobby {
             joinColumns = @JoinColumn(name = "lobby_id"),
             inverseJoinColumns = @JoinColumn(name = "username")
     )
-    private Set<User> players;
+    @Column(nullable = false)
+    private Set<User> players = new HashSet<>();
 
     private String gameServerHost;
 
@@ -85,8 +86,12 @@ public class Lobby {
     public boolean isNotFull() {
         return getNumberOfPlayers() < getMaxPlayers();
     }
-    
+
     public void addPlayer(User player) {
         players.add(new User(player.getUsername(), player.getPassword(), player.getEmail(), player.isEnabled(), player.getAuthorities()));
+    }
+
+    public void removePlayer(User player) {
+        players.removeIf(p -> p.getUsername().equals(player.getUsername()));
     }
 }

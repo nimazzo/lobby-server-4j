@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface LobbyRepository extends JpaRepository<Lobby, Long> {
 
     @Query("""
@@ -21,4 +23,6 @@ public interface LobbyRepository extends JpaRepository<Lobby, Long> {
     @Modifying
     @Query("update Lobby l set l.gameServerHost = ?1, l.gameServerPort = ?2 where l.id = ?3")
     void updateGameServerHostAndGameServerPortById(String gameServerHost, Integer gameServerPort, Long id);
+
+    Optional<Lobby> findByName(String name);
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,8 +28,9 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(nullable = false)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Authority> authorities;
+    private Set<Authority> authorities = new HashSet<>();
 
     public User(String username, String password, String email, boolean enabled, Set<Authority> authorities) {
         this.username = username;
