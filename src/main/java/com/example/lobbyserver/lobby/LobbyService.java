@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class LobbyService {
@@ -31,15 +30,9 @@ public class LobbyService {
         var owner = userRepository.findByUsername(username);
 
         var lobbyToCreate = new Lobby(
-                null,
                 lobbyRequest.name(),
-                0,
                 lobbyRequest.maxPlayers(),
-                owner,
-                Set.of(),
-                null,
-                null,
-                null
+                owner
         );
 
         var savedLobby = lobbyRepository.save(lobbyToCreate);

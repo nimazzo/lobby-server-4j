@@ -63,6 +63,10 @@ public class Lobby {
         this.version = version;
     }
 
+    public Lobby(String name, Integer maxPlayers, User owner) {
+        this(null, name, 0, maxPlayers, owner, Set.of(), null, null, null);
+    }
+
     public User getOwner() {
         return new User(owner.getUsername(), owner.getPassword(), owner.getEmail(), owner.isEnabled(), owner.getAuthorities());
     }
