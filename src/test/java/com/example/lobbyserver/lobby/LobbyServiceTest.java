@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(classes = LobbyService.class)
 @ImportAutoConfiguration(ValidationAutoConfiguration.class)
+@ActiveProfiles("test")
 class LobbyServiceTest {
     private static final User DUMMY_USER = new User("user", "password", "email", true, Set.of());
     private static final String HOSTNAME = "localhost";
@@ -240,7 +242,7 @@ class LobbyServiceTest {
     void testThatRemovingPlayerFromLobbyWorks() {
         var otherUser = new User();
         otherUser.setUsername("otherUser");
-        
+
         var lobby = new Lobby(LOBBY_ID,
                 "Lobby 1",
                 2,
