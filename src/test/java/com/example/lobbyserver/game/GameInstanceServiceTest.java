@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest(classes = GameInstanceService.class)
 @Import(TaskExecutionAutoConfiguration.class)
@@ -38,5 +39,38 @@ class GameInstanceServiceTest {
 
         assertThat(output).contains("Game server connected for lobby 1");
         assertThat(output).containsPattern("Game server port for lobby 1 is *");
+    }
+
+    @Test
+    @DirtiesContext
+    void testThatStartingTheSameGameTwiceThrowsException() {
+        gameInstanceService.startNewGameInstance(1, 2);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> gameInstanceService.startNewGameInstance(1, 2))
+                .withMessage("Game instance for lobby 1 already exists");
+    }
+
+    @Test
+    void testThatLeavingNonExistingGameThrowsException() {
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> gameInstanceService.playerLeftGame(1L))
+                .withMessage("Game instance for lobby 1 does not exist");
+    }
+
+    @Test
+    void testThatLeavingGameWorks(CapturedOutput output) {
+        gameInstanceService.startNewGameInstance(1, 3);
+
+        var remaining = gameInstanceService.playerLeftGame(1L);
+        assertThat(remaining).isEqualTo(2);
+
+        remaining = gameInstanceService.playerLeftGame(1L);
+        assertThat(remaining).isEqualTo(1);
+
+        remaining = gameInstanceService.playerLeftGame(1L);
+        assertThat(remaining).isZero();
+
+        assertThat(output).contains("All players left the game 1, shutting down server");
     }
 }
