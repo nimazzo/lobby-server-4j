@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
@@ -41,7 +43,7 @@ class UserControllerTest {
     @Test
     @WithMockUser(username = "doesNotExist")
     void testThatGetUserThatDoesNotExistsReturns404() throws Exception {
-        given(userService.getUser(anyString())).willReturn(null);
+        given(userService.getUser(anyString())).willReturn(Optional.empty());
         mockMvc.perform(get("/user/doesNotExist"))
                 .andExpect(status().isNotFound());
     }
@@ -57,7 +59,7 @@ class UserControllerTest {
     @WithMockUser
     void testThatGetUserThatExistsReturns200() throws Exception {
         given(userService.getUser("user"))
-                .willReturn(new UserDao("user", "password", "user@user.com"));
+                .willReturn(Optional.of(new UserDao("user", "password", "user@user.com")));
 
         mockMvc.perform(get("/user/user"))
                 .andExpect(status().isOk())
@@ -68,7 +70,7 @@ class UserControllerTest {
     @Test
     void testThatCreateValidAccountWorks() throws Exception {
         var user = new UserDao("user", "password", "user@password.com");
-        given(userService.getUser(user.username())).willReturn(user);
+        given(userService.getUser(user.username())).willReturn(Optional.of(user));
 
         var result = mockMvc.perform(
                         post("/user/register")

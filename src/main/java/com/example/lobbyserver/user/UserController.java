@@ -26,7 +26,7 @@ public class UserController {
         if (!currentUser.equals(username)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ofNullable(userService.getUser(username));
+        return ResponseEntity.of(userService.getUser(username));
     }
 
     @PostMapping("/register")
@@ -41,7 +41,7 @@ public class UserController {
 
         userService.createUser(user.username(), user.password(), user.email(), "USER");
         mailVerificationService.sendVerificationMail(user.email());
-        
+
         var location = ucb.path("/user/{username}").buildAndExpand(user.username()).toUri();
         return ResponseEntity.created(location).build();
     }

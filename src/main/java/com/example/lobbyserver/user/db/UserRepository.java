@@ -6,17 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
     @Transactional
     @Modifying
     @Query("update User u set u.email = ?1 where u.username = ?2")
     void updateEmailByUsername(@NonNull String email, String username);
 
-    User findByUsername(String username);
-
     boolean existsByEmail(String email);
-
-    boolean existsByUsername(String username);
 
     @Transactional
     @Modifying

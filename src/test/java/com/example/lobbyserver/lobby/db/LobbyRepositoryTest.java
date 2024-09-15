@@ -66,8 +66,7 @@ class LobbyRepositoryTest {
     @SuppressWarnings("SqlResolve")
     void testThatPlayerLobbyMappingTableGetClearedWhenPlayerLeavesLobby() {
         var lobby = lobbyRepository.findByName("Lobby 1").orElseThrow();
-        var player = userRepository.findByUsername("admin");
-        assertThat(player).isNotNull();
+        var player = userRepository.findById("admin").orElseThrow();
         lobby.addPlayer(player);
         lobbyRepository.save(lobby);
 

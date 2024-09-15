@@ -51,16 +51,14 @@ class UserRepositoryTest {
 
     @Test
     void testThatDatabaseWorks() {
-        var admin = userRepository.findByUsername("admin");
-        assertThat(admin).isNotNull();
+        var admin = userRepository.findById("admin").orElseThrow();
         assertThat(admin.getUsername()).isEqualTo("admin");
         assertThat(admin.getEmail()).isEqualTo("admin@admin.com");
         assertThat(admin.getAuthorities()).hasSize(2);
         assertThat(admin.getAuthorities().stream().map(Authority::getAuthority)).containsExactlyInAnyOrder("ROLE_ADMIN", "ROLE_USER");
         assertThat(encoder.matches("admin", admin.getPassword())).isTrue();
 
-        var user = userRepository.findByUsername("user");
-        assertThat(user).isNotNull();
+        var user = userRepository.findById("user").orElseThrow();
         assertThat(user.getUsername()).isEqualTo("user");
         assertThat(user.getEmail()).isEqualTo("user@user.com");
         assertThat(user.getAuthorities()).hasSize(1);
@@ -85,8 +83,8 @@ class UserRepositoryTest {
                         "USER", "ADMIN")
                 );
 
-        var invalidUser = userRepository.findByUsername("admin2");
-        assertThat(invalidUser).isNull();
+        var invalidUser = userRepository.findById("admin2");
+        assertThat(invalidUser).isEmpty();
 
         // cleanup
         userRepository.deleteAll();
@@ -108,8 +106,7 @@ class UserRepositoryTest {
     void testThatEmptyAuthoritiesWork() {
         userService.createActivatedUser("user2", "user2", "user2@user2.com");
 
-        var userFromDb = userRepository.findByUsername("user2");
-        assertThat(userFromDb).isNotNull();
+        var userFromDb = userRepository.findById("user2").orElseThrow();
         assertThat(userFromDb.getUsername()).isEqualTo("user2");
         assertThat(userFromDb.getEmail()).isEqualTo("user2@user2.com");
         assertThat(encoder.matches("user2", userFromDb.getPassword())).isTrue();

@@ -36,7 +36,8 @@ public class LobbyService {
     }
 
     public LobbyDao createNewLobby(LobbyRequest lobbyRequest, String username) {
-        var owner = userRepository.findByUsername(username);
+        var owner = userRepository.findById(username)
+                .orElseThrow();
 
         var lobbyToCreate = new Lobby(
                 lobbyRequest.name(),
@@ -66,7 +67,7 @@ public class LobbyService {
                 .filter(Lobby::notStarted)
                 .map(lobby -> {
                     lobby.setNumberOfPlayers(lobby.getNumberOfPlayers() + 1);
-                    var user = userRepository.findByUsername(username);
+                    var user = userRepository.findById(username).orElseThrow();
                     if (lobby.getPlayers().contains(user)) {
                         throw new IllegalStateException("User is already in the lobby");
                     }
@@ -99,7 +100,7 @@ public class LobbyService {
             lobbyRepository.delete(lobby);
         } else {
             log.debug("Removing user {} from users-lobby databse for lobby {}", username, lobbyId);
-            var user = userRepository.findByUsername(username);
+            var user = userRepository.findById(username).orElseThrow();
             lobby.removePlayer(user);
             lobbyRepository.save(lobby);
         }
@@ -108,7 +109,7 @@ public class LobbyService {
     public void saveGameResult(String username, @Valid GameResultRequest result) {
         gameResultRepository.save(new GameResult(
                 null,
-                userRepository.findByUsername(username),
+                userRepository.getReferenceById(username),
                 result.score(),
                 result.level(),
                 result.time(),

@@ -7,6 +7,8 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -41,16 +43,13 @@ public class UserService {
         userRepository.updateEmailByUsername(email, username);
     }
 
-    public UserDao getUser(String username) {
-        var user = userRepository.findByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        return new UserDao(user.getUsername(), user.getPassword(), user.getEmail());
+    public Optional<UserDao> getUser(String username) {
+        return userRepository.findById(username)
+                .map(u -> new UserDao(u.getUsername(), u.getPassword(), u.getEmail()));
     }
 
     public boolean usernameExists(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsById(username);
     }
 
     public boolean emailExists(String email) {

@@ -58,8 +58,8 @@ class LobbyServiceTest {
             return input;
         });
 
-        given(userRepository.findByUsername(username))
-                .willReturn(DUMMY_USER);
+        given(userRepository.findById(username))
+                .willReturn(Optional.of(DUMMY_USER));
 
         var createdLobby = lobbyService.createNewLobby(lobbyRequest, username);
 
@@ -81,7 +81,7 @@ class LobbyServiceTest {
         var hostname = "localhost";
         var port = 9999;
 
-        given(userRepository.findByUsername(username)).willReturn(DUMMY_USER);
+        given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
         given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
                 new Lobby(lobbyId,
                         "Lobby 1",
@@ -110,7 +110,7 @@ class LobbyServiceTest {
         var hostname = "localhost";
         var port = 9999;
 
-        given(userRepository.findByUsername(username)).willReturn(DUMMY_USER);
+        given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
         given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
                 new Lobby(lobbyId,
                         "Lobby 1",
@@ -136,7 +136,7 @@ class LobbyServiceTest {
         var hostname = "localhost";
         var port = 9999;
 
-        given(userRepository.findByUsername(username)).willReturn(DUMMY_USER);
+        given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
         given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
                 new Lobby(lobbyId,
                         "Lobby 1",
