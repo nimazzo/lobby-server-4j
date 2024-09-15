@@ -35,13 +35,13 @@ public class LobbyService {
         this.gameResultRepository = gameResultRepository;
     }
 
-    public LobbyDao createNewLobby(LobbyRequest lobbyRequest, String username) {
+    public LobbyDao createNewLobby(LobbyCreationRequest lobbyCreationRequest, String username) {
         var owner = userRepository.findById(username)
                 .orElseThrow();
 
         var lobbyToCreate = new Lobby(
-                lobbyRequest.name(),
-                lobbyRequest.maxPlayers(),
+                lobbyCreationRequest.name(),
+                lobbyCreationRequest.maxPlayers(),
                 owner
         );
 

@@ -22,7 +22,7 @@ public class LobbyController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createNewLobby(@Valid @RequestBody LobbyRequest lobby, Authentication auth, UriComponentsBuilder ucb) {
+    public ResponseEntity<Void> createNewLobby(@Valid @RequestBody LobbyCreationRequest lobby, Authentication auth, UriComponentsBuilder ucb) {
         var owner = auth.getName();
 
         var savedLobby = lobbyService.createNewLobby(lobby, owner);

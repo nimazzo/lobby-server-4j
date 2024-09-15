@@ -49,7 +49,7 @@ class LobbyServiceTest {
     @Test
     void testThatCreateNewLobbyWorks() {
         var username = "user";
-        var lobbyRequest = new LobbyRequest("Lobby 1", 4);
+        var lobbyRequest = new LobbyCreationRequest("Lobby 1", 4);
 
         var entityCapture = ArgumentCaptor.forClass(Lobby.class);
         given(lobbyRepository.save(entityCapture.capture())).willAnswer(_ -> {

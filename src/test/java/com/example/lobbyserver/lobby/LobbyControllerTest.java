@@ -93,7 +93,7 @@ class LobbyControllerTest {
         mockMvc.perform(post("/lobby/create")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(new LobbyRequest("Test Lobby", 4))))
+                        .content(toJson(new LobbyCreationRequest("Test Lobby", 4))))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(header().string("Location", "http://localhost/lobby/1"));
@@ -102,7 +102,7 @@ class LobbyControllerTest {
     @Test
     @WithMockUser
     void testThatCreateLobbyReturns400ForInvalidLobbyRequest() throws Exception {
-        var invalidLobbyRequest = new LobbyRequest("", 0);
+        var invalidLobbyRequest = new LobbyCreationRequest("", 0);
 
         mockMvc.perform(post("/lobby/create")
                         .with(csrf())
