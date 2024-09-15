@@ -6,12 +6,14 @@ import com.example.lobbyserver.lobby.db.Lobby;
 import com.example.lobbyserver.lobby.db.LobbyRepository;
 import com.example.lobbyserver.user.db.User;
 import com.example.lobbyserver.user.db.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 import java.util.Set;
@@ -21,31 +23,28 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = LobbyService.class)
+@ImportAutoConfiguration(ValidationAutoConfiguration.class)
 class LobbyServiceTest {
     private static final User DUMMY_USER = new User("user", "password", "email", true, Set.of());
     private static final String HOSTNAME = "localhost";
     private static final int PORT = 9999;
     private static final long LOBBY_ID = 99;
 
+    @Autowired
     LobbyService lobbyService;
 
-    @Mock
+    @MockBean
     LobbyRepository lobbyRepository;
 
-    @Mock
+    @MockBean
     GameInstanceService gameInstanceService;
 
-    @Mock
+    @MockBean
     UserRepository userRepository;
 
-    @Mock
+    @MockBean
     GameResultRepository gameResultRepository;
-
-    @BeforeEach
-    void setUp() {
-        lobbyService = new LobbyService(lobbyRepository, gameInstanceService, userRepository, gameResultRepository);
-    }
 
     @Test
     void testThatCreateNewLobbyWorks() {
@@ -202,5 +201,13 @@ class LobbyServiceTest {
 
         var result = lobbyService.tryJoinLobby(LOBBY_ID, username);
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testThatSaveGameResultValidatesInput() {
+        var invalidGameResult = new GameResultRequest(null, null, null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> lobbyService.saveGameResult("user", invalidGameResult));
     }
 }
