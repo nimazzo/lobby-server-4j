@@ -1,6 +1,7 @@
 package com.example.lobbyserver.lobby;
 
 import com.example.lobbyserver.game.GameInstanceService;
+import com.example.lobbyserver.game.db.GameResult;
 import com.example.lobbyserver.game.db.GameResultRepository;
 import com.example.lobbyserver.lobby.db.Lobby;
 import com.example.lobbyserver.lobby.db.LobbyRepository;
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -209,5 +211,106 @@ class LobbyServiceTest {
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> lobbyService.saveGameResult("user", invalidGameResult));
+    }
+
+    @Test
+    void testThatSavingValidGameResultWorks() {
+        var validGameResult = new GameResultRequest(9999L, 11, 60000L);
+        var capture = ArgumentCaptor.forClass(GameResult.class);
+        var dummyTime = LocalDateTime.of(2021, 1, 1, 0, 0);
+
+        given(gameResultRepository.save(capture.capture())).willReturn(null);
+        given(userRepository.getReferenceById("user")).willReturn(DUMMY_USER);
+
+        try (var staticLocalDateTime = mockStatic(LocalDateTime.class)) {
+            staticLocalDateTime.when(LocalDateTime::now).thenReturn(dummyTime);
+            lobbyService.saveGameResult("user", validGameResult);
+        }
+
+        var savedResult = capture.getValue();
+        assertThat(savedResult.getId()).isNull();
+        assertThat(savedResult.getUser().getUsername()).isEqualTo("user");
+        assertThat(savedResult.getScore()).isEqualTo(validGameResult.score());
+        assertThat(savedResult.getLevel()).isEqualTo(validGameResult.level());
+        assertThat(savedResult.getTime()).isEqualTo(validGameResult.time());
+        assertThat(savedResult.getDateTime()).isEqualTo(dummyTime);
+    }
+
+    @Test
+    void testThatRemovingPlayerFromLobbyWorks() {
+        var otherUser = new User();
+        otherUser.setUsername("otherUser");
+        
+        var lobby = new Lobby(LOBBY_ID,
+                "Lobby 1",
+                2,
+                2,
+                DUMMY_USER,
+                Set.of(DUMMY_USER, otherUser),
+                HOSTNAME,
+                PORT,
+                true,
+                null);
+
+        var capture = ArgumentCaptor.forClass(Lobby.class);
+
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(lobby));
+        given(gameInstanceService.playerLeftGame(LOBBY_ID)).willReturn(1);
+        given(userRepository.findById("user")).willReturn(Optional.of(DUMMY_USER));
+        given(lobbyRepository.save(capture.capture())).willReturn(null);
+
+        lobbyService.removePlayerFromLobby(LOBBY_ID, "user");
+
+        var updatedLobby = capture.getValue();
+        assertThat(updatedLobby.getNumberOfPlayers()).isEqualTo(1);
+        assertThat(updatedLobby.getPlayers()).noneMatch(user -> user.getUsername().equals("user"));
+    }
+
+    @Test
+    void testThatRemovePlayerFromInvalidLobbyThrowsException() {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lobbyService.removePlayerFromLobby(LOBBY_ID, "user"))
+                .withMessage("Lobby not found");
+    }
+
+    @Test
+    void testThatRemovePlayerFromOtherLobbyThrowsException() {
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
+                        "Lobby 1",
+                        0,
+                        2,
+                        DUMMY_USER,
+                        Set.of(),
+                        HOSTNAME,
+                        PORT,
+                        false,
+                        null)
+        ));
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> lobbyService.removePlayerFromLobby(LOBBY_ID, "user"))
+                .withMessage("User is not in the lobby");
+    }
+
+    @Test
+    void testThatEmptyLobbyGetsDeletedFromDatabase() {
+        var lobby = new Lobby(LOBBY_ID,
+                "Lobby 1",
+                1,
+                2,
+                DUMMY_USER,
+                Set.of(DUMMY_USER),
+                HOSTNAME,
+                PORT,
+                true,
+                null);
+
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(lobby));
+        given(gameInstanceService.playerLeftGame(LOBBY_ID)).willReturn(0);
+
+        lobbyService.removePlayerFromLobby(LOBBY_ID, "user");
+
+        verify(lobbyRepository).delete(lobby);
     }
 }
