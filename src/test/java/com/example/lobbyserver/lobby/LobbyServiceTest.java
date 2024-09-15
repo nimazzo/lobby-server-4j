@@ -7,7 +7,6 @@ import com.example.lobbyserver.lobby.db.LobbyRepository;
 import com.example.lobbyserver.user.db.User;
 import com.example.lobbyserver.user.db.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,13 +18,15 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
 class LobbyServiceTest {
     private static final User DUMMY_USER = new User("user", "password", "email", true, Set.of());
+    private static final String HOSTNAME = "localhost";
+    private static final int PORT = 9999;
+    private static final long LOBBY_ID = 99;
 
     LobbyService lobbyService;
 
@@ -77,80 +78,71 @@ class LobbyServiceTest {
     @Test
     void testThatTryJoinLobbyReturnsConnectionResults() {
         var username = "user";
-        var lobbyId = 99L;
-        var hostname = "localhost";
-        var port = 9999;
 
         given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
-        given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
-                new Lobby(lobbyId,
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
                         "Lobby 1",
                         0,
                         4,
                         DUMMY_USER,
                         Set.of(),
-                        hostname,
-                        port,
+                        HOSTNAME,
+                        PORT,
                         false,
                         null)
         ));
 
-        var result = lobbyService.tryJoinLobby(lobbyId, username);
+        var result = lobbyService.tryJoinLobby(LOBBY_ID, username);
         assertThat(result).isPresent();
 
         var connectionDetails = result.get();
-        assertThat(connectionDetails.hostname()).isEqualTo(hostname);
-        assertThat(connectionDetails.port()).isEqualTo(port);
+        assertThat(connectionDetails.hostname()).isEqualTo(HOSTNAME);
+        assertThat(connectionDetails.port()).isEqualTo(PORT);
     }
 
     @Test
     void testThatTryingToJoinALobbyTwiceThrowsException() {
         var username = "user";
-        var lobbyId = 99L;
-        var hostname = "localhost";
-        var port = 9999;
 
         given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
-        given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
-                new Lobby(lobbyId,
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
                         "Lobby 1",
                         0,
                         4,
                         DUMMY_USER,
                         Set.of(DUMMY_USER),
-                        hostname,
-                        port,
+                        HOSTNAME,
+                        PORT,
                         false,
                         null)
         ));
 
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> lobbyService.tryJoinLobby(lobbyId, username))
+                .isThrownBy(() -> lobbyService.tryJoinLobby(LOBBY_ID, username))
                 .withMessage("User is already in the lobby");
     }
 
     @Test
     void testThatTryJoinLobbyReturnsEmptyForFullLobby() {
         var username = "user";
-        var lobbyId = 99L;
-        var hostname = "localhost";
-        var port = 9999;
 
         given(userRepository.findById(username)).willReturn(Optional.of(DUMMY_USER));
-        given(lobbyRepository.findById(lobbyId)).willReturn(Optional.of(
-                new Lobby(lobbyId,
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
                         "Lobby 1",
                         4,
                         4,
                         DUMMY_USER,
                         Set.of(DUMMY_USER),
-                        hostname,
-                        port,
+                        HOSTNAME,
+                        PORT,
                         true,
                         null)
         ));
 
-        var result = lobbyService.tryJoinLobby(lobbyId, username);
+        var result = lobbyService.tryJoinLobby(LOBBY_ID, username);
         assertThat(result).isEmpty();
     }
 
@@ -161,14 +153,54 @@ class LobbyServiceTest {
     }
 
     @Test
-    @Disabled
-    void testThatFullLobbyGetsDeletedFromDatabase() {
-        fail("not implemented");
+    void testThatFullLobbyGetsSetToGameStarted() {
+        var username = "user2";
+
+        var capture = ArgumentCaptor.forClass(Lobby.class);
+        given(userRepository.findById(username)).willReturn(Optional.of(
+                new User(username, "password", "email@email.com", true, Set.of())
+        ));
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
+                        "Lobby 1",
+                        1,
+                        2,
+                        DUMMY_USER,
+                        Set.of(DUMMY_USER),
+                        HOSTNAME,
+                        PORT,
+                        false,
+                        null)
+        ));
+        given(lobbyRepository.save(capture.capture())).willReturn(null);
+
+        var result = lobbyService.tryJoinLobby(LOBBY_ID, username);
+
+        assertThat(result).isPresent();
+        assertThat(capture.getValue().getGameStarted()).isTrue();
     }
 
     @Test
-    @Disabled
     void testThatCannotJoinLobbyThatHasAlreadyStarted() {
-        fail("not implemented");
+        var username = "user2";
+
+        given(userRepository.findById(username)).willReturn(Optional.of(
+                new User(username, "password", "email@email.com", true, Set.of())
+        ));
+        given(lobbyRepository.findById(LOBBY_ID)).willReturn(Optional.of(
+                new Lobby(LOBBY_ID,
+                        "Lobby 1",
+                        1,
+                        2,
+                        DUMMY_USER,
+                        Set.of(DUMMY_USER),
+                        HOSTNAME,
+                        PORT,
+                        true,
+                        null)
+        ));
+
+        var result = lobbyService.tryJoinLobby(LOBBY_ID, username);
+        assertThat(result).isEmpty();
     }
 }
