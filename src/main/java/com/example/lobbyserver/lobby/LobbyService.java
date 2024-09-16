@@ -37,6 +37,7 @@ public class LobbyService {
         this.gameResultRepository = gameResultRepository;
     }
 
+    @Transactional
     public LobbyDao createNewLobby(LobbyCreationRequest lobbyCreationRequest, String username) {
         var owner = userRepository.findById(username)
                 .orElseThrow();
