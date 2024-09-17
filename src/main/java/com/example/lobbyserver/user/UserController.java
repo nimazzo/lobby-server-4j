@@ -20,13 +20,10 @@ public class UserController {
         this.mailVerificationService = mailVerificationService;
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UserDao> getUser(@PathVariable String username, Authentication authentication) {
+    @GetMapping
+    public ResponseEntity<UserDao> getUser(Authentication authentication) {
         var currentUser = authentication.getName();
-        if (!currentUser.equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        return ResponseEntity.of(userService.getUser(username));
+        return ResponseEntity.of(userService.getUser(currentUser));
     }
 
     @PostMapping("/register")
@@ -42,7 +39,7 @@ public class UserController {
         userService.createUser(user.username(), user.password(), user.email(), "USER");
         mailVerificationService.sendVerificationMail(user.email());
 
-        var location = ucb.path("/user/{username}").buildAndExpand(user.username()).toUri();
+        var location = ucb.path("/user").buildAndExpand(user.username()).toUri();
         return ResponseEntity.created(location).build();
     }
 }

@@ -52,18 +52,11 @@ class UserControllerTest {
 
     @Test
     @WithMockUser
-    void testThatGetForeignUserReturns403() throws Exception {
-        mockMvc.perform(get("/user/notMe"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser
     void testThatGetUserThatExistsReturns200() throws Exception {
         given(userService.getUser("user"))
                 .willReturn(Optional.of(new UserDao("user", "password", "user@user.com")));
 
-        mockMvc.perform(get("/user/user"))
+        mockMvc.perform(get("/user"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value("user"));
@@ -80,7 +73,7 @@ class UserControllerTest {
                                 .content(toJson(user))
                                 .with(csrf()))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/user/user"))
+                .andExpect(header().string("Location", "http://localhost/user"))
                 .andReturn();
 
         verify(mailVerificationService, times(1)).sendVerificationMail(user.email());
