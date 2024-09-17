@@ -8,6 +8,8 @@ public record GameResultRequest(
         @NotNull
         Integer level,
         @NotNull
+        Integer linesCleared,
+        @NotNull
         Long time
 ) {
 }

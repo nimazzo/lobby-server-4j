@@ -53,11 +53,11 @@ class GameResultRepositoryTest {
         var user3 = userRepository.findById("user3").orElseThrow();
 
         var testData = List.of(
-                new GameResult(null, user1, 1000L, 10, 10000L, dateTime),
-                new GameResult(null, user1, 1000L, 10, 10000L, dateTime),
-                new GameResult(null, user1, 1000L, 10, 10000L, dateTime),
-                new GameResult(null, user2, 1000L, 10, 10000L, dateTime),
-                new GameResult(null, user3, 1000L, 10, 10000L, dateTime)
+                new GameResult(null, user1, 1000L, 10, 6, 10000L, dateTime),
+                new GameResult(null, user1, 1000L, 10, 6, 10000L, dateTime),
+                new GameResult(null, user1, 1000L, 10, 6, 10000L, dateTime),
+                new GameResult(null, user2, 1000L, 10, 6, 10000L, dateTime),
+                new GameResult(null, user3, 1000L, 10, 6, 10000L, dateTime)
         );
         gameResultRepository.saveAll(testData);
     }

@@ -31,16 +31,20 @@ public class GameResult {
     private Integer level;
 
     @Column(nullable = false)
+    private Integer linesCleared;
+
+    @Column(nullable = false)
     private Long time;
 
     @Column(nullable = false)
     private LocalDateTime dateTime;
 
-    public GameResult(Long id, User user, Long score, Integer level, Long time, LocalDateTime dateTime) {
+    public GameResult(Long id, User user, Long score, Integer level, Integer linesCleared, Long time, LocalDateTime dateTime) {
         this.id = id;
         this.user = new User(user);
         this.score = score;
         this.level = level;
+        this.linesCleared = linesCleared;
         this.time = time;
         this.dateTime = dateTime;
     }

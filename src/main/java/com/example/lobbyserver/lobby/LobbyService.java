@@ -116,6 +116,7 @@ public class LobbyService {
                 userRepository.getReferenceById(username),
                 result.score(),
                 result.level(),
+                result.linesCleared(),
                 result.time(),
                 LocalDateTime.now()
         ));

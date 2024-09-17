@@ -48,10 +48,10 @@ class GameResultsControllerTest {
     }
 
     private static final List<GameResult> DUMMY_RESULTS = List.of(
-            new GameResult(1L, DUMMY_USER_1, 100L, 1, 1000L, DUMMY_DATE),
-            new GameResult(2L, DUMMY_USER_1, 200L, 1, 2000L, DUMMY_DATE),
-            new GameResult(3L, DUMMY_USER_2, 200L, 2, 4000L, DUMMY_DATE),
-            new GameResult(4L, DUMMY_USER_3, 400L, 4, 5000L, DUMMY_DATE)
+            new GameResult(1L, DUMMY_USER_1, 100L, 1, 2, 1000L, DUMMY_DATE),
+            new GameResult(2L, DUMMY_USER_1, 200L, 1, 3, 2000L, DUMMY_DATE),
+            new GameResult(3L, DUMMY_USER_2, 200L, 2, 4, 4000L, DUMMY_DATE),
+            new GameResult(4L, DUMMY_USER_3, 400L, 4, 5, 5000L, DUMMY_DATE)
     );
 
     @Autowired

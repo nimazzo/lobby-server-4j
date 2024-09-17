@@ -21,13 +21,7 @@ public record LobbyDao(
         int maxPlayers,
 
         @NotBlank
-        String owner,
-
-        @NotBlank
-        String gameServerHost,
-
-        @NotNull
-        Integer gameServerPort
+        String owner
 ) {
     public static LobbyDao fromLobby(Lobby lobby) {
         return new LobbyDao(
@@ -35,9 +29,7 @@ public record LobbyDao(
                 lobby.getName(),
                 lobby.getNumberOfPlayers(),
                 lobby.getMaxPlayers(),
-                lobby.getOwner().getUsername(),
-                lobby.getGameServerHost(),
-                lobby.getGameServerPort()
+                lobby.getOwner().getUsername()
         );
     }
 }

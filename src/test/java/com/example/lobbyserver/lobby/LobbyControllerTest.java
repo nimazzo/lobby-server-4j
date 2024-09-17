@@ -36,9 +36,8 @@ class LobbyControllerTest {
             "Test Lobby",
             2,
             4,
-            "Test Owner",
-            "localhost",
-            1111);
+            "Test Owner"
+    );
 
     @Autowired
     MockMvc mockMvc;

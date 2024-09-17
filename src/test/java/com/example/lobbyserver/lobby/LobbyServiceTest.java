@@ -72,8 +72,6 @@ class LobbyServiceTest {
         assertThat(createdLobby.numberOfPlayers()).isEqualTo(0);
         assertThat(createdLobby.maxPlayers()).isEqualTo(lobbyRequest.maxPlayers());
         assertThat(createdLobby.owner()).isEqualTo(username);
-        assertThat(createdLobby.gameServerHost()).isNull();
-        assertThat(createdLobby.gameServerPort()).isNull();
 
         verify(gameInstanceService).startNewGameInstance(1L, lobbyRequest.maxPlayers());
     }
@@ -209,7 +207,7 @@ class LobbyServiceTest {
 
     @Test
     void testThatSaveGameResultValidatesInput() {
-        var invalidGameResult = new GameResultRequest(null, null, null);
+        var invalidGameResult = new GameResultRequest(null, null, null, null);
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> lobbyService.saveGameResult("user", invalidGameResult));
@@ -217,7 +215,7 @@ class LobbyServiceTest {
 
     @Test
     void testThatSavingValidGameResultWorks() {
-        var validGameResult = new GameResultRequest(9999L, 11, 60000L);
+        var validGameResult = new GameResultRequest(9999L, 11, 123, 60000L);
         var capture = ArgumentCaptor.forClass(GameResult.class);
         var dummyTime = LocalDateTime.of(2021, 1, 1, 0, 0);
 
