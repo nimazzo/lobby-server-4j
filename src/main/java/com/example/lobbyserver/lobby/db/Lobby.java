@@ -38,10 +38,9 @@ public class Lobby {
     @OneToMany
     @JoinTable(
             name = "lobby_players",
-            joinColumns = @JoinColumn(name = "lobby_id"),
-            inverseJoinColumns = @JoinColumn(name = "username")
+            joinColumns = @JoinColumn(name = "lobby_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "username", nullable = false)
     )
-    @Column(nullable = false)
     private Set<User> players = new HashSet<>();
 
     private String gameServerHost;
@@ -96,7 +95,7 @@ public class Lobby {
     }
 
     public void addPlayer(User player) {
-        players.add(new User(owner));
+        players.add(new User(player));
     }
 
     public void removePlayer(User player) {

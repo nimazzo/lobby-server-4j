@@ -105,7 +105,6 @@ public class LobbyService {
             log.debug("Removing user {} from users-lobby databse for lobby {}", username, lobbyId);
             var user = userRepository.findById(username).orElseThrow();
             lobby.removePlayer(user);
-            lobby.setNumberOfPlayers(lobby.getNumberOfPlayers() - 1);
             lobbyRepository.save(lobby);
         }
     }

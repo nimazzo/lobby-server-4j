@@ -262,7 +262,7 @@ class LobbyServiceTest {
         lobbyService.removePlayerFromLobby(LOBBY_ID, "user");
 
         var updatedLobby = capture.getValue();
-        assertThat(updatedLobby.getNumberOfPlayers()).isEqualTo(1);
+        assertThat(updatedLobby.getNumberOfPlayers()).isEqualTo(2);
         assertThat(updatedLobby.getPlayers()).noneMatch(user -> user.getUsername().equals("user"));
     }
 
