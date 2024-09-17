@@ -1,6 +1,8 @@
 package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +15,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,10 +46,39 @@ public class GameInstanceService implements SmartLifecycle {
 
     private final Phaser stopGate = new Phaser(1);
 
+    private Path tempDirectory;
+
     public GameInstanceService(LobbyRepository lobbyRepository, Environment env, Executor taskScheduler) {
         this.lobbyRepository = lobbyRepository;
         this.env = env;
         this.taskScheduler = taskScheduler;
+    }
+
+    @PostConstruct
+    void setupTempDirectory() throws IOException {
+        tempDirectory = Files.createTempDirectory("game-server-logs");
+        log.info("Temp directory for game server logs created at: {}", tempDirectory);
+    }
+
+    @PreDestroy
+    void cleanupTempDirectory() throws IOException {
+        Files.walkFileTree(tempDirectory, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                log.info("Temp file cleanup - deleting file: {}", file);
+                Files.delete(file);
+                return super.visitFile(file, attrs);
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+                if (e == null) {
+                    log.warn("Temp file cleanup - deleting directory: {}", dir);
+                    Files.delete(dir);
+                }
+                return super.postVisitDirectory(dir, e);
+            }
+        });
     }
 
     @Async
@@ -94,7 +133,13 @@ public class GameInstanceService implements SmartLifecycle {
             if (!serverResource.exists()) {
                 throw new IllegalStateException("Game server executable not found at " + serverResource.getPath());
             }
+
+            var timeStamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(':', '.');
+            var prefix = String.format("game-server-%d-%s", lobbyId, timeStamp);
+            var tempFile = File.createTempFile(prefix, ".log", tempDirectory.toFile());
             var process = new ProcessBuilder(serverResource.getFile().getPath(), Integer.toString(localLobbyPort))
+                    .redirectErrorStream(true)
+                    .redirectOutput(tempFile)
                     .start();
             log.debug("Game server for lobby {} started", lobbyId);
             gameInstances.get(lobbyId).setProcess(process.toHandle());
