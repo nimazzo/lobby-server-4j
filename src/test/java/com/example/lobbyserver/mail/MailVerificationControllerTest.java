@@ -28,7 +28,8 @@ class MailVerificationControllerTest {
     void testThatVerifyValidTokenReturns200() throws Exception {
         given(mailVerificationService.verifyMail("test-token")).willReturn(true);
         mockMvc.perform(get("/verify?token=test-token"))
-                .andExpect(status().isOk());
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login?verified"));
     }
 
     @Test

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Obpf4J Lobby Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-gradient-to-r from-blue-400 to-purple-500">
+<div class="flex flex-col space-y-6 w-full max-w-sm p-8 bg-white shadow-lg rounded-lg border border-gray-200">
+    <!-- Heading -->
+    <h1 class="text-3xl font-extrabold mb-8 text-center text-gray-800">
+        <span sec:authorize="isAuthenticated()">Welcome, <span sec:authentication="name"></span>!</span>
+        <span sec:authorize="isAnonymous()">Welcome</span>
+    </h1>
+    <p sec:authorize="isAnonymous()" class="text-lg text-gray-600 text-center mb-6">
+        Please sign in or register to continue
+    </p>
+
+    <!-- Display error message if 'error' parameter is present -->
+    <div th:if="${param.logout}" class="mb-4 p-4 bg-green-200 text-green-800 border border-green-400 rounded-lg">
+        <p>Logged out successfully.</p>
+    </div>
+
+    <!-- Conditional Buttons -->
+    <div sec:authorize="isAnonymous()" class="space-y-4">
+        <!-- Login Button -->
+        <button class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-4 px-8 rounded-lg text-2xl w-full shadow-md transition-transform transform hover:scale-105"
+                th:onclick="|window.location.href='/login'|">
+            Login
+        </button>
+
+        <!-- Register Button -->
+        <button class="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-4 px-8 rounded-lg text-2xl w-full shadow-md transition-transform transform hover:scale-105"
+                th:onclick="|window.location.href='/register'|">
+            Register
+        </button>
+    </div>
+
+    <div sec:authorize="isAuthenticated()" class="text-center">
+        <!-- Logout Button -->
+        <form th:action="@{/logout}" method="post">
+            <button type="submit"
+                    class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-4 px-8 rounded-lg text-2xl w-full shadow-md transition-transform transform hover:scale-105">
+                Logout
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
