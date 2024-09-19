@@ -36,7 +36,6 @@ class GameInstanceServiceTest {
     LobbyRepository lobbyRepository;
 
     @MockBean
-    @SuppressWarnings("unused")
     ServerLogsService serverLogsService;
 
     File tempFile;
