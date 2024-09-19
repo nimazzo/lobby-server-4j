@@ -1,13 +1,11 @@
 package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import lombok.EqualsAndHashCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.SmartLifecycle;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
@@ -15,16 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,10 +25,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class GameInstanceService implements SmartLifecycle {
 
+    @Value("${game.server.executable-name}")
+    private String gameServerExecutable;
+
+    @Value("${game.server.instance.host}")
+    private String gameServerInstanceHost;
+
     private static final Logger log = LoggerFactory.getLogger(GameInstanceService.class);
 
     private final LobbyRepository lobbyRepository;
-    private final Environment env;
+    private final ServerLogsService serverLogsService;
     private final Executor taskScheduler;
 
     private final Map<Long, GameInstanceInfo> gameInstances = new ConcurrentHashMap<>();
@@ -46,39 +42,10 @@ public class GameInstanceService implements SmartLifecycle {
 
     private final Phaser stopGate = new Phaser(1);
 
-    private Path tempDirectory;
-
-    public GameInstanceService(LobbyRepository lobbyRepository, Environment env, Executor taskScheduler) {
+    public GameInstanceService(LobbyRepository lobbyRepository, ServerLogsService serverLogsService, Executor taskScheduler) {
         this.lobbyRepository = lobbyRepository;
-        this.env = env;
+        this.serverLogsService = serverLogsService;
         this.taskScheduler = taskScheduler;
-    }
-
-    @PostConstruct
-    void setupTempDirectory() throws IOException {
-        tempDirectory = Files.createTempDirectory("game-server-logs");
-        log.info("Temp directory for game server logs created at: {}", tempDirectory);
-    }
-
-    @PreDestroy
-    void cleanupTempDirectory() throws IOException {
-        Files.walkFileTree(tempDirectory, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                log.info("Temp file cleanup - deleting file: {}", file);
-                Files.delete(file);
-                return super.visitFile(file, attrs);
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
-                if (e == null) {
-                    log.warn("Temp file cleanup - deleting directory: {}", dir);
-                    Files.delete(dir);
-                }
-                return super.postVisitDirectory(dir, e);
-            }
-        });
     }
 
     @Async
@@ -103,7 +70,7 @@ public class GameInstanceService implements SmartLifecycle {
             log.debug("Game server port for lobby {} is {}", lobbyId, port);
 
             lobbyRepository.updateGameServerHostAndGameServerPortById(
-                    env.getProperty("game.server.instance.host"), port, lobbyId);
+                    gameServerInstanceHost, port, lobbyId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -129,14 +96,12 @@ public class GameInstanceService implements SmartLifecycle {
     private void launchGameServer(int localLobbyPort, long lobbyId) {
         stopGate.register();
         try {
-            var serverResource = new FileSystemResource(Objects.requireNonNull(env.getProperty("game.server.executable-name")));
+            var serverResource = new FileSystemResource(Objects.requireNonNull(gameServerExecutable));
             if (!serverResource.exists()) {
                 throw new IllegalStateException("Game server executable not found at " + serverResource.getPath());
             }
 
-            var timeStamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(':', '.');
-            var prefix = String.format("game-server-%d-%s", lobbyId, timeStamp);
-            var tempFile = File.createTempFile(prefix, ".log", tempDirectory.toFile());
+            var tempFile = serverLogsService.createLogFileForLobby(lobbyId);
             var process = new ProcessBuilder(serverResource.getFile().getPath(), Integer.toString(localLobbyPort))
                     .redirectErrorStream(true)
                     .redirectOutput(tempFile)
@@ -185,9 +150,11 @@ public class GameInstanceService implements SmartLifecycle {
                 .forEach(ProcessHandle::destroy);
     }
 
-    public void terminateAll() {
+    public int terminateAll() {
         shutdown();
+        int size = gameInstances.size();
         gameInstances.clear();
+        return size;
     }
 
     @SuppressWarnings({"LombokSetterMayBeUsed", "LombokGetterMayBeUsed"})

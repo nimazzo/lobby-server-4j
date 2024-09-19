@@ -121,7 +121,9 @@ public class LobbyService {
         ));
     }
 
-    public void deleteAll() {
+    public long deleteAll() {
+        var count = lobbyRepository.count();
         lobbyRepository.deleteAll();
+        return count;
     }
 }
