@@ -1,11 +1,12 @@
 <FindBugsFilter>
-    <Class name="com.example.lobbyserver.user.UserService">
+    <!-- Exclude EI_EXPOSE_REP2 warnings for GameInstanceService and LobbyService fields in classes -->
+    <Field name="gameInstanceService">
         <BugPattern pattern="EI_EXPOSE_REP2"/>
-    </Class>
-    <Class name="com.example.lobbyserver.lobby.LobbyService">
+    </Field>
+    <Field name="lobbyService">
         <BugPattern pattern="EI_EXPOSE_REP2"/>
-    </Class>
-    <Class name="com.example.lobbyserver.lobby.LobbyController">
+    </Field>
+    <Field name="userDetailsManager">
         <BugPattern pattern="EI_EXPOSE_REP2"/>
-    </Class>
+    </Field>
 </FindBugsFilter>

@@ -185,6 +185,11 @@ public class GameInstanceService implements SmartLifecycle {
                 .forEach(ProcessHandle::destroy);
     }
 
+    public void terminateAll() {
+        shutdown();
+        gameInstances.clear();
+    }
+
     @SuppressWarnings({"LombokSetterMayBeUsed", "LombokGetterMayBeUsed"})
     @EqualsAndHashCode
     static class GameInstanceInfo {

@@ -120,4 +120,8 @@ public class LobbyService {
                 LocalDateTime.now()
         ));
     }
+
+    public void deleteAll() {
+        lobbyRepository.deleteAll();
+    }
 }
