@@ -80,6 +80,7 @@ class GameInstanceServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void testThatLeavingGameWorks(CapturedOutput output) {
         gameInstanceService.startNewGameInstance(1, 3);
 
