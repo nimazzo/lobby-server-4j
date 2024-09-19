@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 
@@ -26,10 +27,14 @@ public class UserConfiguration {
     ApplicationRunner initDummyUsers(UserService userService) {
         log.info("Populating 'users' database with 'user' and 'admin' users");
         return _ -> {
-            userService.createActivatedUser("user", "user", "user@user.com", "USER");
-            userService.createActivatedUser("admin", "admin", "admin@admin.com", "USER", "ADMIN");
-            userService.createActivatedUser("bob", "bob", "bob@bob.com", "USER");
-            userService.createActivatedUser("alice", "alice", "alice@alice.com", "USER");
+            try {
+                userService.createActivatedUser("user", "user", "user@user.com", "USER");
+                userService.createActivatedUser("admin", "admin", "admin@admin.com", "USER", "ADMIN");
+                userService.createActivatedUser("bob", "bob", "bob@bob.com", "USER");
+                userService.createActivatedUser("alice", "alice", "alice@alice.com", "USER");
+            } catch (DuplicateKeyException _) {
+                log.warn("Test users already exist in the database");
+            }
         };
     }
 }
