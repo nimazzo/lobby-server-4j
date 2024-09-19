@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Endpoint(id = "lobbiesReset")
+@SuppressWarnings("unused")
 public class ResetLobbiesEndpoint {
 
     private static final Logger log = LoggerFactory.getLogger(ResetLobbiesEndpoint.class);

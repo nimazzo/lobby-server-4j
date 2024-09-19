@@ -1,7 +1,6 @@
 package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,13 +44,9 @@ class GameInstanceServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         tempFile = Files.createTempFile("temp-log", ".log").toFile();
+        tempFile.deleteOnExit();
         given(serverLogsService.createLogFileForLobby(anyLong()))
                 .willReturn(tempFile);
-    }
-
-    @AfterEach
-    void tearDown() {
-        var _ = tempFile.delete();
     }
 
     @Test
@@ -61,7 +56,7 @@ class GameInstanceServiceTest {
 
     @Test
     @DirtiesContext
-    void testThatStartNewGameInstanceGeneratesCorrectOutput(CapturedOutput output) throws IOException {
+    void testThatStartNewGameInstanceGeneratesCorrectOutput(CapturedOutput output) {
         gameInstanceService.startNewGameInstance(1, 2);
 
         assertThat(output).contains("Game server connected for lobby 1");
@@ -70,7 +65,7 @@ class GameInstanceServiceTest {
 
     @Test
     @DirtiesContext
-    void testThatStartingTheSameGameTwiceThrowsException() throws IOException {
+    void testThatStartingTheSameGameTwiceThrowsException() {
         gameInstanceService.startNewGameInstance(1, 2);
 
         assertThatExceptionOfType(IllegalStateException.class)
@@ -86,7 +81,7 @@ class GameInstanceServiceTest {
     }
 
     @Test
-    void testThatLeavingGameWorks(CapturedOutput output) throws IOException {
+    void testThatLeavingGameWorks(CapturedOutput output) {
         gameInstanceService.startNewGameInstance(1, 3);
 
         var remaining = gameInstanceService.playerLeftGame(1L);

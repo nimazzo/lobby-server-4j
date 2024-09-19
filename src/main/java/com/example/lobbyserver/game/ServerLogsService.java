@@ -1,5 +1,6 @@
 package com.example.lobbyserver.game;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,10 @@ import java.util.List;
 public class ServerLogsService {
 
     private static final Logger log = LoggerFactory.getLogger(ServerLogsService.class);
-    private final Path tempDirectory;
+    private Path tempDirectory;
 
-    public ServerLogsService() throws IOException {
+    @PostConstruct
+    void createTempDirectory() throws IOException {
         tempDirectory = Files.createTempDirectory("game-server-logs");
         log.info("Temp directory for game server logs created at: {}", tempDirectory);
     }
