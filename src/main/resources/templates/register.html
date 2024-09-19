@@ -16,9 +16,6 @@
     </div>
 
     <form th:action="@{/register}" method="post" class="space-y-4">
-        <!-- CSRF Token Field -->
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-
         <!-- Username Field -->
         <div>
             <label for="username" class="block text-gray-700 font-semibold mb-2">Username</label>
