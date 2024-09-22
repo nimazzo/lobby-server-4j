@@ -59,6 +59,7 @@ public class GameInstanceService implements SmartLifecycle {
             var localLobbyPort = serverSocket.getLocalPort();
             taskScheduler.execute(() -> launchGameServer(localLobbyPort, lobbyId));
 
+            serverSocket.setSoTimeout(2000);
             var gameServer = serverSocket.accept();
             log.debug("Game server connected for lobby {}", lobbyId);
 
@@ -147,6 +148,7 @@ public class GameInstanceService implements SmartLifecycle {
         gameInstances.values()
                 .stream()
                 .map(GameInstanceInfo::getProcess)
+                .filter(Objects::nonNull)
                 .forEach(ProcessHandle::destroy);
     }
 
