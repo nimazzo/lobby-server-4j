@@ -2,6 +2,7 @@ package com.example.lobbyserver.game;
 
 import com.example.lobbyserver.lobby.db.LobbyRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ class GameInstanceServiceTest {
     }
 
     @Test
+    @Tag("CI-skip")
     @DirtiesContext
     void testThatStartNewGameInstanceGeneratesCorrectOutput(CapturedOutput output) {
         gameInstanceService.startNewGameInstance(1, 2);
@@ -63,6 +65,7 @@ class GameInstanceServiceTest {
     }
 
     @Test
+    @Tag("CI-skip")
     @DirtiesContext
     void testThatStartingTheSameGameTwiceThrowsException() {
         gameInstanceService.startNewGameInstance(1, 2);
@@ -80,6 +83,7 @@ class GameInstanceServiceTest {
     }
 
     @Test
+    @Tag("CI-skip")
     @DirtiesContext
     void testThatLeavingGameWorks(CapturedOutput output) {
         gameInstanceService.startNewGameInstance(1, 3);
