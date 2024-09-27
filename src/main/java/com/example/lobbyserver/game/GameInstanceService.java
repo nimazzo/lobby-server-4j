@@ -103,7 +103,7 @@ public class GameInstanceService implements SmartLifecycle {
             }
 
             var tempFile = serverLogsService.createLogFileForLobby(lobbyId);
-            var process = new ProcessBuilder(serverResource.getFile().getPath(), Integer.toString(localLobbyPort))
+            var process = new ProcessBuilder(serverResource.getFile().getAbsolutePath(), Integer.toString(localLobbyPort))
                     .redirectErrorStream(true)
                     .redirectOutput(tempFile)
                     .start();
