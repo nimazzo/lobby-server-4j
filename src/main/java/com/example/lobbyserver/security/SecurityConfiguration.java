@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         boolean isDevEnvironment = env.matchesProfiles("dev");
         if (isDevEnvironment) {
             http.authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/actuator/**").authenticated()
+                    .requestMatchers("/actuator/**").hasRole("ADMIN")
                     .requestMatchers("/testing/**").permitAll()
             );
         }
