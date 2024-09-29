@@ -1,5 +1,5 @@
 # Obpf4J Lobby Server
-Obpf4J Lobby Server is a backend server designed for managing multiplayer lobbies for [Obpf4J Tetris Clients](https://github.com/nimazzo/obpf-tetris-4j). The Obpf4J Lobby Server uses the Tetris game server implementation provided by the [OpenBrickProtocolFoundation Simulator](https://github.com/OpenBrickProtocolFoundation/simulator) project in order to launch and manage game instances.
+Obpf4J Lobby Server is a backend server designed for managing multiplayer lobbies for [Obpf4J Tetris Clients](https://github.com/nimazzo/obpf-tetris-4j). The Obpf4J Lobby Server uses the Tetris game server implementation provided by the [OpenBrickProtocolFoundation Simulator](https://github.com/OpenBrickProtocolFoundation/simulator) project in order to launch and manage game instances. Built with Spring Boot, it handles lobby creation, game instance management, and user authentication.
 
 ## Table of Contents
 - [Requirements](#requirements)
