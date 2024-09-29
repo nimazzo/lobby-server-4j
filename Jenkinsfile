@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'docker-jdk-22'
+            label 'docker-jdk-23'
         }
     }
     stages {
