@@ -1,5 +1,5 @@
-# Lobby Server
-Lobby Server is a backend server designed for managing multiplayer lobbies for Obpf Tetris Clients. It is built using Spring Boot and uses PostgreSQL as the database.
+# Obpf4J Lobby Server
+Obpf4J Lobby Server is a backend server designed for managing multiplayer lobbies for [Obpf4J Tetris Clients](https://github.com/nimazzo/obpf-tetris-4j). The Obpf4J Lobby Server uses the Tetris game server implementation provided by the [OpenBrickProtocolFoundation Simulator](https://github.com/OpenBrickProtocolFoundation/simulator) project in order to launch and manage game instances.
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -8,14 +8,14 @@ Lobby Server is a backend server designed for managing multiplayer lobbies for O
 - [Usage](#usage)
 
 ## Requirements
-In order to run the lobby server, you need to have the following installed:
+In order to run the Obpf4J Lobby Server, you need to have the following installed:
 - Java (JDK 22 or higher)
 - Docker (Including Docker Compose)
 - CMake (only for building the game server executable)
 - C++ compiler (only for building the game server executable)
 
 ### Game Server Executable
-As the lobby server will be responsible for launching the actual game instances upon lobby creation, you need to have a compiled game server executable available on your system. 
+As the Obpf4J Lobby Server will be responsible for launching the actual game instances upon lobby creation, you need to have a compiled game server executable available on your system. 
 You can download the source code for the game server at [OpenBrickProtocolFoundation/simulator](https://github.com/OpenBrickProtocolFoundation/simulator) (Latest known working commit: 43f8401f87815a722a9e45b893e4604d85881ec9).
 
 ```sh
@@ -37,7 +37,7 @@ After compiling, the created executable can be found at `simulator/build/bin/ser
 
 ## Installation
 
-To build and run the Lobby Server locally, follow these steps:
+To build and run the Obpf4J Lobby Server locally, follow these steps:
 
 1. **Clone the repository:**
    ```sh
@@ -48,18 +48,18 @@ To build and run the Lobby Server locally, follow these steps:
   Open the [`application.properties`](https://github.com/nimazzo/lobby-server/blob/main/src/main/resources/application.properties) file found under `lobby-server/src/main/resources` and set the file path (relative to your working directory or as an absolute file path) to the previously created `server` (`server.exe` on Windows) executable as the value of the `game.server.executable-name` property.
 
 
-4. **Run the lobby server:**
+4. **Run the Obpf4J Lobby Server:**
    This will automatically create and run the required docker containers as defined in the [`compose.yaml`](https://github.com/nimazzo/lobby-server/blob/main/compose.yaml) file and start the spring boot application.
    ```sh
    $ ./mvnw spring-boot:run
    ```
 
-6. *(Optional)* **Package the lobby server as a standalone JAR:**
+6. *(Optional)* **Package the Obpf4J Lobby Server as a standalone JAR:**
    ```sh
    $ ./mvnw clean verify
    ```
 
-7. *(Optional)* **Run the lobby server as a standalone JAR:**
+7. *(Optional)* **Run the Obpf4J Lobby Server as a standalone JAR:**
    
    - Start the Docker containers:
      ```sh
@@ -80,7 +80,7 @@ To build and run the Lobby Server locally, follow these steps:
      export SPRING_DATASOURCE_PASSWORD=YOUR_DB_PASSWORD_GOES_HERE
      ```
 
-   - Run the lobby server:
+   - Run the Obpf4J Lobby Server:
      ```sh
      $ java -jar ./target/lobbyserver-0.0.1-SNAPSHOT.jar
      ```
