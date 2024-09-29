@@ -6,6 +6,8 @@ Obpf4J Lobby Server is a backend server designed for managing multiplayer lobbie
 - [Installation](#installation)
 - [Docker Containers](#Docker-Containers)
 - [Usage](#usage)
+- [Tests](#tests)
+- [Jenkins CI Pipeline](Jenkins-CI-Pipeline)
 
 ## Requirements
 In order to run the Obpf4J Lobby Server, you need to have the following installed:
