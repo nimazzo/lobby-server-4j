@@ -210,3 +210,5 @@ This project provides various test classes including unit tests, Spring Boot Web
 ### Spring WebMvcTest Test Slices
 
 ### Spring DataJpaTest Test Slices Using Testcontainers
+
+## Jenkins CI Pipeline
