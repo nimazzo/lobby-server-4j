@@ -19,7 +19,7 @@ user authentication.
 
 In order to run the Obpf4J Lobby Server, you need to have the following installed:
 
-- Java (JDK 22 or higher)
+- JDK 22
 - Docker (Including Docker Compose)
 - CMake (only for building the game server executable)
 - C++ compiler (only for building the game server executable)
