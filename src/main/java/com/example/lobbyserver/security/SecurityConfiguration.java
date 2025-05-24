@@ -44,6 +44,11 @@ public class SecurityConfiguration {
                         .requestMatchers("/game-results").permitAll()
                         .requestMatchers("/csrf").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**"
+                        ).permitAll()
                         // require authentication
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/lobby/**").authenticated()
