@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,16 +38,16 @@ class LobbyServiceTest {
     @Autowired
     LobbyService lobbyService;
 
-    @MockBean
+    @MockitoBean
     LobbyRepository lobbyRepository;
 
-    @MockBean
+    @MockitoBean
     GameInstanceService gameInstanceService;
 
-    @MockBean
+    @MockitoBean
     UserRepository userRepository;
 
-    @MockBean
+    @MockitoBean
     GameResultRepository gameResultRepository;
 
     @Test

@@ -8,12 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +32,11 @@ class GameInstanceServiceTest {
     @Autowired
     GameInstanceService gameInstanceService;
 
-    @MockBean
+    @MockitoBean
     @SuppressWarnings("unused")
     LobbyRepository lobbyRepository;
 
-    @MockBean
+    @MockitoBean
     ServerLogsService serverLogsService;
 
     File tempFile;
